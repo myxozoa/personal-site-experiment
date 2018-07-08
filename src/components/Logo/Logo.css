@@ -1,0 +1,17 @@
+.Logo {
+  background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 126px;
+  height: 120px;
+}
+
+.Logo-Name {
+  font-size: 13pt;
+  color: #D8D8D8;
+  letter-spacing: 5px;
+  line-height: 30px;
+  width: 90px;
+  padding: 0 0 5px 2px;
+}

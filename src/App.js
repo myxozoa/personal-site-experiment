@@ -1,4 +1,5 @@
 import React from 'react';
+import './App.css';
 import Header from './components/Header/Header.js';
 import Info from './components/Info/Info.js';
 import Ribbons from './components/Ribbons/Ribbons.js';

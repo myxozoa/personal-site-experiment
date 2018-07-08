@@ -1,8 +1,11 @@
 import React from 'react';
+import './Logo.css';
 
 const Logo = () => {
   return (
-    <div>Ronnie Miksch</div>
+    <div className='Logo' >
+      <div className='Logo-Name'>Ronnie Miksch</div>
+    </div>
   );
 };
 
