@@ -9,6 +9,10 @@ import PropTypes from 'prop-types';
 import lottie from 'lottie-web';
 
 export default class Lottie extends React.Component {
+  constructor(props) {
+    super(props);
+    this.el = React.createRef();
+  }
   componentDidMount() {
     const {
       options,
@@ -24,7 +28,7 @@ export default class Lottie extends React.Component {
     } = options;
 
     this.options = {
-      container: this.el,
+      container: this.el.current,
       renderer: 'svg',
       loop: loop || false,
       autoplay: autoplay || false,
@@ -33,8 +37,6 @@ export default class Lottie extends React.Component {
       rendererSettings,
     };
 
-    this.options = { ...this.options, ...options };
-
     this.anim = lottie.loadAnimation(this.options);
     this.registerEvents(eventListeners);
   }
@@ -42,7 +44,6 @@ export default class Lottie extends React.Component {
   componentWillUpdate(nextProps /* , nextState */) {
     /* Recreate the animation handle if the data is changed */
     if (this.options.animationData !== nextProps.options.animationData) {
-      console.log('updated');
       this.deRegisterEvents(this.props.eventListeners);
       this.destroy();
       this.options = {...this.options, ...nextProps.options};
@@ -55,6 +56,10 @@ export default class Lottie extends React.Component {
     if (this.props.isStopped) {
       this.stop();
     } else {
+      // if(this.props.direction < 0) {
+      //   console.log('should tele', this.props.currentSeg);
+      //   this.anim.goToAndStop(this.props.currentSeg[1], true);
+      // }
       this.play();
     }
 
@@ -75,19 +80,21 @@ export default class Lottie extends React.Component {
   }
 
   setDirection() {
-    this.anim.setDirection(this.props.direction);
+    console.log('direction', this.props.direction);
+    lottie.setDirection(this.props.direction);
   }
 
   play() {
     if(this.options.segments) {
-      this.playSegments(this.props.currentSeg);
+      console.log('segments: ', this.props.currentSeg);
+      this.playSegments(this.props.currentSeg, true);
     } else {
       this.anim.play();
     }
   }
 
-  playSegments(seg) {
-    this.anim.playSegments(this.options.segments[seg], true);
+  playSegments(seg, forced) {
+    this.anim.playSegments(seg, forced);
   }
 
   stop() {
@@ -127,6 +134,7 @@ export default class Lottie extends React.Component {
   }
 
   render() {
+    console.log('lottie refs:', this.el)
     const {
       width,
       height,
@@ -163,9 +171,8 @@ export default class Lottie extends React.Component {
       // Bug with eslint rules https://github.com/airbnb/javascript/issues/1374
       // eslint-disable-next-line jsx-a11y/no-static-element-interactions
       <div
-        ref={(c) => {
-          this.el = c;
-        }}
+        ref={this.el}
+        className={this.props.className}
         style={lottieStyles}
         onClick={onClickHandler}
         title={title}

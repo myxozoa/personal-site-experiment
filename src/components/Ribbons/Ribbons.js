@@ -4,61 +4,57 @@ import * as animationData from '../../data.json';
 import './Ribbons.css';
 
 class Ribbons extends React.Component {
-  state = {
-    currentSeg: 'start',
-    direction: 1,
-    page: 1,
-  };
+  constructor(props) {
+    super(props);
 
-  defaultOptions = {
-    loop: false,
-    autoplay: false,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice',
-    },
-    segments: {
+    this.segments = {
       start: [0, 1],
-      1: [1, 66],
+      1: [0, 66],
       2: [66, 162],
       end: [162, 163],
-    },
-  };
+    };
 
-  prevSeg = () => {
-    let prevPage = {
-      1: 'start',
+    this.defaultOptions = {
+      loop: false,
+      autoplay: false,
+      animationData: animationData,
+      rendererSettings: {
+        preserveAspectRatio: 'xMinYMid slice',
+        progressiveLoad: false,
+      },
+      segments: true,
+    };
+
+    this.prevSegMap = {
+      1: 1,
       2: 1,
       3: 2,
     };
-    this.setState(prev => {
-      return {
-        currentSeg: prevPage[prev.page],
-        direction: -1,
-        page: prev.page > 1 ? prev.page - 1 : 1, // decrements but stops at 1
-      };
-    });
-  };
 
-  nextSeg = () => {
-    let nextPage = {
+    this.nextSegMap = {
       1: 1,
       2: 2,
-      3: 'end',
+      3: 3,
     };
-    this.setState(prev => {
-      return {
-        currentSeg: nextPage[prev.page],
-        direction: 1,
-        page: prev.page <= 2 ? prev.page + 1 : 3, // increments but stops at 3
-      };
-    });
+  }
+
+  state = {
+    currentSeg: 'start',
   };
+
+  chooseSegment = (newProps) => {
+    const prevOrNextSeg = newProps.direction > 0 ? this.segments[this.nextSegMap[this.props.page]] : this.segments[this.prevSegMap[this.props.page]];
+
+    this.setState({ currentSeg: prevOrNextSeg });
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.chooseSegment(newProps);
+  }
 
   render() {
     return (
       <React.Fragment>
-        {this.state.page === 1 ? null : <div className="prevButton" onClick={this.prevSeg} />}
         <div className="Lottie">
           <Lottie
             options={this.defaultOptions}
@@ -66,12 +62,16 @@ class Ribbons extends React.Component {
             isPaused={false}
             isClickToPauseDisabled={true}
             currentSeg={this.state.currentSeg}
-            direction={this.state.direction}
+            direction={this.props.direction}
             speed={1}
-            eventListeners={[]}
+            eventListeners={[
+              // {
+              //   eventName: 'enterFrame',
+              //   callback: (e) => console.log('frame: ', e),
+              // },
+            ]}
           />
         </div>
-        {this.state.page === 3 ? null : <div className="nextButton" onClick={this.nextSeg} />}
       </React.Fragment>
     );
   }
